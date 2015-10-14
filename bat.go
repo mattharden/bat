@@ -17,6 +17,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/tls"
 	"encoding/json"
 	"flag"
@@ -33,7 +34,7 @@ import (
 	"strings"
 )
 
-const version = "0.0.3"
+const version = "0.1.0"
 
 var (
 	ver              bool
@@ -163,7 +164,9 @@ func main() {
 	}
 	if len(stdin) > 0 {
 		var j interface{}
-		err = json.Unmarshal(stdin, &j)
+		d := json.NewDecoder(bytes.NewReader(stdin))
+		d.UseNumber()
+		err = d.Decode(&j)
 		if err != nil {
 			httpreq.Body(stdin)
 		} else {
@@ -321,7 +324,7 @@ flags:
          "B" request body
          "h" response headers
          "b" response body
-  -v, -verison=true           Show Version Number 
+  -v, -version=true           Show Version Number 
 
 METHOD:
    bat defaults to either GET (if there is no request data) or POST (with request data).
